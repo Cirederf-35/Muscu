@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Muscu !</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1B1D21">
+<link rel="icon" href="icon.svg">
+<style>
+:root{
+  --bg:#1B1D21;
+  --surface:#24272C;
+  --surface-2:#2C3036;
+  --line:#3A3F46;
+  --text:#E9EAEC;
+  --text-dim:#9AA0A8;
+  --accent:#E8A33D;
+  --accent-dim:#8A6425;
+  --danger:#C9503E;
+  --ok:#5E9E7A;
+  --radius:10px;
+  --grotesk:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --mono:"IBM Plex Mono","SFMono-Regular",Menlo,monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--grotesk);
+  min-height:100vh;
+  padding-bottom:80px;
+}
+header{
+  padding:22px 18px 14px;
+  border-bottom:1px solid var(--line);
+  position:sticky;
+  top:0;
+  background:var(--bg);
+  z-index:5;
+}
+header h1{
+  margin:0;
+  font-size:26px;
+  font-weight:800;
+  letter-spacing:-0.02em;
+}
+header .sub{
+  color:var(--text-dim);
+  font-size:13px;
+  margin-top:2px;
+  font-family:var(--mono);
+}
+main{padding:16px;max-width:640px;margin:0 auto;}
+
+.toolbar{display:flex;gap:8px;margin-bottom:16px;}
+.toolbar input[type="search"]{
+  flex:1;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  color:var(--text);
+  padding:11px 12px;
+  font-size:15px;
+  font-family:var(--grotesk);
+}
+.toolbar input[type="search"]:focus{outline:2px solid var(--accent);outline-offset:1px;}
+
+button{
+  font-family:var(--grotesk);
+  cursor:pointer;
+  border:none;
+  border-radius:var(--radius);
+}
+.btn-primary{
+  background:var(--accent);
+  color:#1B1D21;
+  font-weight:700;
+  padding:11px 16px;
+  font-size:15px;
+}
+.btn-ghost{
+  background:transparent;
+  border:1px solid var(--line);
+  color:var(--text);
+  padding:11px 14px;
+  font-size:15px;
+}
+.btn-ghost:focus-visible,.btn-primary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+.empty{
+  text-align:center;
+  padding:60px 20px;
+  color:var(--text-dim);
+}
+.empty .big{font-size:40px;margin-bottom:10px;}
+
+.card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:14px 16px;
+  margin-bottom:10px;
+}
+.card-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:10px;
+}
+.card-top h3{
+  margin:0;
+  font-size:17px;
+  font-weight:700;
+}
+.card .muscles{
+  margin-top:6px;
+  font-size:12.5px;
+  color:var(--text-dim);
+  line-height:1.5;
+}
+.muscles b{color:var(--text);font-weight:600;}
+.card .charge{
+  font-family:var(--mono);
+  font-size:13px;
+  color:var(--accent);
+  white-space:nowrap;
+}
+.card .row-actions{
+  margin-top:10px;
+  display:flex;
+  gap:8px;
+}
+.card .row-actions button{
+  padding:7px 12px;
+  font-size:13px;
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  color:var(--text-dim);
+}
+
+.fab{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  width:56px;height:56px;
+  border-radius:50%;
+  background:var(--accent);
+  color:#1B1D21;
+  font-size:28px;
+  font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(0,0,0,.4);
+  z-index:6;
+}
+
+.sheet-backdrop{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;
+  z-index:10;
+}
+.sheet-backdrop.open{display:block;}
+.sheet{
+  position:fixed;
+  left:0;right:0;bottom:0;
+  max-height:88vh;
+  overflow-y:auto;
+  background:var(--surface);
+  border-top:1px solid var(--line);
+  border-radius:16px 16px 0 0;
+  padding:18px 18px 26px;
+  transform:translateY(100%);
+  transition:transform .22s ease;
+  z-index:11;
+}
+.sheet.open{transform:translateY(0);}
+.sheet h2{margin:0 0 14px;font-size:19px;}
+.field{margin-bottom:14px;}
+.field label{
+  display:block;
+  font-size:12.5px;
+  color:var(--text-dim);
+  margin-bottom:5px;
+  font-family:var(--mono);
+}
+.field input,.field textarea{
+  width:100%;
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  border-radius:8px;
+  color:var(--text);
+  padding:10px 11px;
+  font-size:15px;
+  font-family:var(--grotesk);
+}
+.field textarea{font-family:var(--mono);font-size:13px;min-height:110px;resize:vertical;}
+.field-row{display:flex;gap:10px;}
+.field-row .field{flex:1;}
+
+.muscle-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  margin-top:4px;
+}
+.muscle-pick{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:8px 9px;
+  font-size:12.5px;
+}
+.muscle-pick select{
+  background:transparent;
+  border:none;
+  color:var(--accent);
+  font-family:var(--mono);
+  font-size:12px;
+  margin-left:auto;
+}
+.group-label{
+  font-size:11px;
+  text-transform:none;
+  color:var(--text-dim);
+  margin:12px 0 4px;
+  font-family:var(--mono);
+}
+
+.sheet-actions{
+  display:flex;
+  gap:10px;
+  margin-top:18px;
+}
+.sheet-actions button{flex:1;padding:12px;font-size:15px;}
+
+.tab-import textarea{width:100%;min-height:160px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:12.5px;padding:10px;}
+.import-msg{font-size:13px;margin-top:8px;font-family:var(--mono);}
+.import-msg.ok{color:var(--ok);}
+.import-msg.err{color:var(--danger);}
+
+footer.appbar{
+  position:fixed;
+  bottom:0;left:0;right:0;
+  background:var(--surface);
+  border-top:1px solid var(--line);
+  display:flex;
+  z-index:5;
+}
+footer.appbar button{
+  flex:1;
+  background:transparent;
+  color:var(--text-dim);
+  padding:12px 6px 10px;
+  font-size:11.5px;
+  font-family:var(--mono);
+  border-radius:0;
+}
+footer.appbar button.active{color:var(--accent);}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Muscu !</h1>
+  <div class="sub" id="headerSub">0 exercice en base</div>
+</header>
+
+<main>
+  <div class="toolbar">
+    <input type="search" id="search" placeholder="Chercher un exercice…">
+  </div>
+
+  <div id="list"></div>
+  <div class="empty" id="emptyState" style="display:none;">
+    <div class="big">🏋️</div>
+    <div>Aucun exercice pour l'instant.<br>Ajoute-en un, ou importe un JSON.</div>
+  </div>
+</main>
+
+<button class="fab" id="fabAdd" aria-label="Ajouter un exercice">+</button>
+
+<footer class="appbar">
+  <button class="active" id="navList">BASE</button>
+  <button id="navImport">IMPORT JSON</button>
+</footer>
+
+<div class="sheet-backdrop" id="backdrop"></div>
+
+<!-- Fiche exercice -->
+<div class="sheet" id="sheetForm">
+  <h2 id="formTitle">Nouvel exercice</h2>
+  <div class="field">
+    <label>Nom</label>
+    <input type="text" id="fNom" placeholder="Ex. Tirage vertical">
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>Poids / cran (kg)</label>
+      <input type="number" id="fCran" inputmode="decimal">
+    </div>
+    <div class="field">
+      <label>Min (kg)</label>
+      <input type="number" id="fMin" inputmode="decimal">
+    </div>
+    <div class="field">
+      <label>Max (kg)</label>
+      <input type="number" id="fMax" inputmode="decimal">
+    </div>
+  </div>
+
+  <div class="group-label">Muscles sollicités — 1 = principal / 2 = secondaire / vide = non concerné</div>
+  <div class="muscle-grid" id="muscleGrid"></div>
+
+  <div class="field" style="margin-top:14px;">
+    <label>Sous-variante (optionnel)</label>
+    <input type="text" id="fSub" placeholder="Ex. prise large">
+  </div>
+
+  <div class="sheet-actions">
+    <button class="btn-ghost" id="btnCancel">Annuler</button>
+    <button class="btn-primary" id="btnSave">Enregistrer</button>
+  </div>
+</div>
+
+<!-- Import JSON -->
+<div class="sheet" id="sheetImport">
+  <h2>Importer un JSON</h2>
+  <div class="tab-import">
+    <textarea id="importArea" placeholder='{"exercices":[{"nom":"Tirage vertical","muscles":{"dorsaux":1,"biceps":2},"cran":5,"min":10,"max":75,"sub":""}]}'></textarea>
+    <div class="import-msg" id="importMsg"></div>
+  </div>
+  <div class="sheet-actions">
+    <button class="btn-ghost" id="btnImportCancel">Fermer</button>
+    <button class="btn-primary" id="btnImportGo">Importer</button>
+  </div>
+</div>
+
+<script>
+const MUSCLE_KEYS = {
+  "Pectoraux": ["pectoSup","pectoMed","pectoInf"],
+  "Dos": ["dorsaux","trapezes","rhomboides","lombaires"],
+  "Épaules": ["deltAnt","deltLat","deltPost"],
+  "Bras": ["biceps","triceps","avantbras"],
+  "Jambes": ["quadriceps","ischios","fessiers","adducteurs","mollets"],
+  "Gainage": ["abdos","obliques","transverse"],
+  "Groupe": ["grp:pecs","grp:dos","grp:epaules","grp:bras","grp:jambes","grp:gainage"]
+};
+const LABELS = {
+  pectoSup:"Pecto sup.",pectoMed:"Pecto moy.",pectoInf:"Pecto inf.",
+  dorsaux:"Grand dorsal",trapezes:"Trapèzes",rhomboides:"Rhomboïdes",lombaires:"Lombaires",
+  deltAnt:"Delt. antérieur",deltLat:"Delt. latéral",deltPost:"Delt. postérieur",
+  biceps:"Biceps",triceps:"Triceps",avantbras:"Avant-bras",
+  quadriceps:"Quadriceps",ischios:"Ischio-jambiers",fessiers:"Fessiers",adducteurs:"Adducteurs",mollets:"Mollets",
+  abdos:"Grand droit",obliques:"Obliques",transverse:"Transverse",
+  "grp:pecs":"Pectoraux (grp)","grp:dos":"Dos (grp)","grp:epaules":"Épaules (grp)",
+  "grp:bras":"Bras (grp)","grp:jambes":"Jambes (grp)","grp:gainage":"Gainage (grp)"
+};
+
+const STORAGE_KEY = "muscu_exercices_v1";
+let state = { exercices: [] };
+let editingIndex = null;
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) state = JSON.parse(raw);
+  }catch(e){ console.error("Lecture localStorage échouée", e); }
+  if(!state.exercices) state.exercices = [];
+}
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function muscleSummary(muscles){
+  const principaux = [];
+  const secondaires = [];
+  Object.entries(muscles||{}).forEach(([k,v])=>{
+    const label = LABELS[k] || k;
+    if(v===1) principaux.push(label);
+    else if(v===2) secondaires.push(label);
+  });
+  let out = "";
+  if(principaux.length) out += "<b>Principal :</b> " + principaux.join(", ");
+  if(secondaires.length) out += (out?"<br>":"") + "<b>Secondaire :</b> " + secondaires.join(", ");
+  return out || "<span style='opacity:.6'>Muscles non renseignés</span>";
+}
+
+function render(){
+  const list = document.getElementById("list");
+  const empty = document.getElementById("emptyState");
+  const q = document.getElementById("search").value.trim().toLowerCase();
+  const items = state.exercices
+    .map((ex,i)=>({ex,i}))
+    .filter(({ex}) => !q || ex.nom.toLowerCase().includes(q));
+
+  document.getElementById("headerSub").textContent =
+    state.exercices.length + (state.exercices.length>1 ? " exercices en base" : " exercice en base");
+
+  if(items.length===0){
+    list.innerHTML = "";
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
+
+  list.innerHTML = items.map(({ex,i})=>`
+    <div class="card" data-i="${i}">
+      <div class="card-top">
+        <h3>${escapeHtml(ex.nom)}</h3>
+        <div class="charge">${fmtCharge(ex)}</div>
+      </div>
+      <div class="muscles">${muscleSummary(ex.muscles)}${ex.sub ? `<br><b>Variante :</b> ${escapeHtml(ex.sub)}` : ""}</div>
+      <div class="row-actions">
+        <button data-action="edit" data-i="${i}">Modifier</button>
+        <button data-action="del" data-i="${i}">Supprimer</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function fmtCharge(ex){
+  if(ex.min===0 && ex.max===0 && ex.cran===0) return "poids du corps";
+  return `${ex.cran} kg/cran · ${ex.min}–${ex.max} kg`;
+}
+
+function escapeHtml(s){
+  return (s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function buildMuscleGrid(existing){
+  const grid = document.getElementById("muscleGrid");
+  let html = "";
+  Object.entries(MUSCLE_KEYS).forEach(([group, keys])=>{
+    html += `<div class="group-label" style="grid-column:1/-1;">${group}</div>`;
+    keys.forEach(k=>{
+      const val = existing && existing[k] ? String(existing[k]) : "";
+      html += `
+        <label class="muscle-pick">
+          ${LABELS[k]}
+          <select data-key="${k}">
+            <option value="" ${val===""?"selected":""}>—</option>
+            <option value="1" ${val==="1"?"selected":""}>1</option>
+            <option value="2" ${val==="2"?"selected":""}>2</option>
+          </select>
+        </label>`;
+    });
+  });
+  grid.innerHTML = html;
+}
+
+function openForm(index){
+  editingIndex = (typeof index === "number") ? index : null;
+  const ex = editingIndex!==null ? state.exercices[editingIndex] : null;
+  document.getElementById("formTitle").textContent = ex ? "Modifier l'exercice" : "Nouvel exercice";
+  document.getElementById("fNom").value = ex ? ex.nom : "";
+  document.getElementById("fCran").value = ex ? ex.cran : "";
+  document.getElementById("fMin").value = ex ? ex.min : "";
+  document.getElementById("fMax").value = ex ? ex.max : "";
+  document.getElementById("fSub").value = ex ? (ex.sub||"") : "";
+  buildMuscleGrid(ex ? ex.muscles : null);
+  openSheet("sheetForm");
+}
+
+function collectForm(){
+  const nom = document.getElementById("fNom").value.trim();
+  const cran = Number(document.getElementById("fCran").value || 0);
+  const min = Number(document.getElementById("fMin").value || 0);
+  const max = Number(document.getElementById("fMax").value || 0);
+  const sub = document.getElementById("fSub").value.trim();
+  const muscles = {};
+  document.querySelectorAll("#muscleGrid select").forEach(sel=>{
+    if(sel.value) muscles[sel.dataset.key] = Number(sel.value);
+  });
+  return { nom, cran, min, max, sub, muscles };
+}
+
+function openSheet(id){
+  document.getElementById("backdrop").classList.add("open");
+  document.getElementById(id).classList.add("open");
+}
+function closeSheets(){
+  document.getElementById("backdrop").classList.remove("open");
+  document.querySelectorAll(".sheet").forEach(s=>s.classList.remove("open"));
+}
+
+document.getElementById("fabAdd").addEventListener("click", ()=>openForm(null));
+document.getElementById("btnCancel").addEventListener("click", closeSheets);
+document.getElementById("backdrop").addEventListener("click", closeSheets);
+
+document.getElementById("btnSave").addEventListener("click", ()=>{
+  const data = collectForm();
+  if(!data.nom){
+    document.getElementById("fNom").focus();
+    return;
+  }
+  if(editingIndex!==null){
+    state.exercices[editingIndex] = data;
+  }else{
+    state.exercices.push(data);
+  }
+  saveState();
+  render();
+  closeSheets();
+});
+
+document.getElementById("list").addEventListener("click", (e)=>{
+  const btn = e.target.closest("button[data-action]");
+  if(!btn) return;
+  const i = Number(btn.dataset.i);
+  if(btn.dataset.action==="edit"){
+    openForm(i);
+  }else if(btn.dataset.action==="del"){
+    if(confirm(`Supprimer "${state.exercices[i].nom}" ?`)){
+      state.exercices.splice(i,1);
+      saveState();
+      render();
+    }
+  }
+});
+
+document.getElementById("search").addEventListener("input", render);
+
+document.getElementById("navList").addEventListener("click", ()=>{
+  closeSheets();
+  document.getElementById("navList").classList.add("active");
+  document.getElementById("navImport").classList.remove("active");
+});
+document.getElementById("navImport").addEventListener("click", ()=>{
+  document.getElementById("navImport").classList.add("active");
+  document.getElementById("navList").classList.remove("active");
+  document.getElementById("importMsg").textContent = "";
+  openSheet("sheetImport");
+});
+document.getElementById("btnImportCancel").addEventListener("click", ()=>{
+  closeSheets();
+  document.getElementById("navImport").classList.remove("active");
+  document.getElementById("navList").classList.add("active");
+});
+
+document.getElementById("btnImportGo").addEventListener("click", ()=>{
+  const msg = document.getElementById("importMsg");
+  try{
+    const parsed = JSON.parse(document.getElementById("importArea").value);
+    if(!parsed.exercices || !Array.isArray(parsed.exercices)) throw new Error("Clé 'exercices' manquante ou invalide.");
+    let added = 0;
+    parsed.exercices.forEach(ex=>{
+      if(!ex.nom) return;
+      state.exercices.push({
+        nom: ex.nom,
+        cran: Number(ex.cran||0),
+        min: Number(ex.min||0),
+        max: Number(ex.max||0),
+        sub: ex.sub || "",
+        muscles: ex.muscles || {}
+      });
+      added++;
+    });
+    saveState();
+    render();
+    msg.textContent = `${added} exercice(s) importé(s).`;
+    msg.className = "import-msg ok";
+    document.getElementById("importArea").value = "";
+  }catch(err){
+    msg.textContent = "Erreur : " + err.message;
+    msg.className = "import-msg err";
+  }
+});
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{
+    navigator.serviceWorker.register("sw.js").catch(e=>console.error("SW échoué", e));
+  });
+}
+
+loadState();
+render();
+</script>
+</body>
+</html>
