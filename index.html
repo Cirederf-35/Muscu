@@ -67,14 +67,15 @@ main{max-width:1000px;margin:0 auto;padding:22px 18px 60px;}
 .exportBtn:hover{border-color:var(--accent);color:var(--accent);}
 .rightRow{text-align:right;margin-bottom:14px;}
 
+.topRow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+.topLeft{display:flex;align-items:center;gap:12px;}
+.iconBtnRow{display:flex;gap:8px;}
+.iconBtn{width:38px;height:38px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);color:var(--accent);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.iconBtn:hover{border-color:var(--accent);}
+.iconBtn svg{width:18px;height:18px;}
+
 .searchRow{display:flex;gap:10px;margin-bottom:16px;}
 .searchRow input{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:12px;color:var(--text);padding:12px 14px;font-size:14px;font-family:var(--body);}
-.addBtn{background:var(--accent);color:#1B1D21;border:none;border-radius:12px;padding:12px 18px;font-weight:700;font-size:14px;cursor:pointer;font-family:var(--body);}
-
-.addChoices{display:flex;gap:10px;margin-bottom:16px;}
-.addChoices .opt{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center;font-size:13px;color:var(--text-dim);cursor:pointer;}
-.addChoices .opt b{display:block;color:var(--text);font-size:14px;margin-bottom:4px;font-family:var(--display);}
-.addChoices .opt.selected{border-color:var(--accent);color:var(--text);}
 
 .promptTeaser{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
 .promptTeaser span{font-size:13px;color:var(--text-dim);}
@@ -96,18 +97,15 @@ main{max-width:1000px;margin:0 auto;padding:22px 18px 60px;}
 .photoPreview{margin-top:8px;display:flex;align-items:center;gap:10px;}
 .photoPreview img{width:60px;height:60px;object-fit:cover;border-radius:9px;border:1px solid var(--line);}
 
-.libGrid{display:flex;flex-direction:column;gap:12px;}
-@media(min-width:900px){.libGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow);}
-.card .cardTop{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
-.card .cardMain{display:flex;gap:12px;flex:1;}
-.card .thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;flex:0 0 auto;cursor:pointer;border:1px solid var(--line);}
-.card .thumbEmpty{width:56px;height:56px;border-radius:10px;flex:0 0 auto;background:var(--surface-2);border:1px dashed var(--line);}
-.card h4{margin:0 0 4px;font-family:var(--display);font-size:15.5px;font-weight:700;color:var(--text);}
-.card .meta{font-family:var(--mono);font-size:12px;color:var(--accent);}
-.card .muscles{font-size:12.5px;color:var(--text-dim);margin-top:6px;line-height:1.5;}
-.delBtn{background:transparent;border:1px solid var(--line);color:var(--danger);border-radius:8px;width:30px;height:30px;flex:0 0 auto;cursor:pointer;font-size:14px;}
-.delBtn:hover{border-color:var(--danger);}
+.libGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+@media(min-width:900px){.libGrid{grid-template-columns:repeat(4,1fr);}}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);cursor:pointer;}
+.tile .ph{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:var(--surface-2);}
+.tile .phEmpty{width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;background:var(--surface-2);color:var(--text-dim);}
+.tile .phEmpty svg{width:32px;height:32px;opacity:.5;}
+.tile .info{padding:10px 12px 12px;}
+.tile h4{margin:0 0 4px;font-family:var(--display);font-size:13.5px;font-weight:700;line-height:1.25;color:var(--text);}
+.tile .grp{font-size:11px;color:var(--accent);font-family:var(--mono);}
 .emptyMsg{text-align:center;color:var(--text-dim);padding:40px 10px;font-size:14px;}
 
 .groupChips{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:18px;}
@@ -215,40 +213,22 @@ main{max-width:1000px;margin:0 auto;padding:22px 18px 60px;}
   </div>
 
   <div class="screen" id="screen-biblio" data-hidden="1">
-    <div class="backRow"><button class="backBtn" data-goto="accueil">← Accueil</button><div class="screenTitle">Bibliothèque</div></div>
-    <div class="rightRow"><button class="exportBtn" id="exportLib">⭳ Exporter en JSON</button></div>
-    <div class="searchRow"><input type="search" id="search" placeholder="Chercher une machine…"><button class="addBtn" id="toggleAdd">+ Ajouter</button></div>
-
-    <div id="addPanel" style="display:none;">
-      <div class="addChoices">
-        <div class="opt selected" data-mode="manuel"><b>Manuellement</b>Formulaire complet</div>
-        <div class="opt" data-mode="photo"><b>Par photo</b>Prompt + IA externe</div>
+    <div class="topRow">
+      <div class="topLeft">
+        <button class="backBtn" data-goto="accueil">← Accueil</button>
+        <div class="screenTitle">Bibliothèque</div>
       </div>
-
-      <div id="modeManuel">
-        <div class="field"><label>Nom</label><input type="text" id="fNom" placeholder="Ex. Tirage vertical"></div>
-        <div class="fieldRow">
-          <div class="field"><label>Poids / cran (kg)</label><input type="number" id="fCran" inputmode="decimal"></div>
-          <div class="field"><label>Min (kg)</label><input type="number" id="fMin" inputmode="decimal"></div>
-          <div class="field"><label>Max (kg)</label><input type="number" id="fMax" inputmode="decimal"></div>
-        </div>
-        <div class="field"><label>Substitut (optionnel)</label><input type="text" id="fSub" placeholder="Autre machine si celle-ci est occupée"></div>
-        <div class="field">
-          <label>Photo (optionnel)</label>
-          <input type="file" id="fPhoto" accept="image/*">
-          <div class="photoPreview" id="photoPreview" style="display:none;"><img id="photoPreviewImg" alt=""><span style="font-size:12px;color:var(--text-dim);">Aperçu</span></div>
-        </div>
-        <div class="groupPickGrid" id="groupPickGrid"></div>
-        <button class="saveManualBtn" id="btnSaveManual">Ajouter à la bibliothèque</button>
-      </div>
-
-      <div id="modePhoto" style="display:none;">
-        <div class="promptTeaser"><span>Prompt prêt à copier pour ton IA, avec la photo de la machine.</span><button class="smallBtn" id="openPromptModal">Voir le prompt</button></div>
-        <div class="pasteBox"><textarea id="importArea" placeholder="Colle ici le JSON renvoyé par l'IA…"></textarea></div>
-        <div class="importMsg" id="importMsg"></div>
-        <button class="saveManualBtn" id="btnImportJson">Ajouter à la bibliothèque</button>
+      <div class="iconBtnRow">
+        <button class="iconBtn" id="toggleAdd" title="Ajouter" aria-label="Ajouter">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <button class="iconBtn" id="exportLib" title="Exporter en JSON" aria-label="Exporter en JSON">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
+        </button>
       </div>
     </div>
+
+    <div class="searchRow"><input type="search" id="search" placeholder="Chercher une machine…"></div>
 
     <div class="libGrid" id="libGrid"></div>
   </div>
@@ -315,6 +295,41 @@ main{max-width:1000px;margin:0 auto;padding:22px 18px 60px;}
     <h3>Remplacer par…</h3>
     <div class="altList" id="altList"></div>
     <div class="modalActions"><button class="close" data-close="altModalBg">Annuler</button></div>
+  </div>
+</div>
+
+<div class="modalBg" id="addModalBg">
+  <div class="modal">
+    <h3>Ajouter une machine</h3>
+    <div class="promptTeaser"><span>Prends la machine en photo, colle le prompt dans ton IA.</span><button class="smallBtn" id="openPromptModal">Voir le prompt</button></div>
+    <div class="pasteBox"><textarea id="importArea" placeholder="Colle ici le JSON renvoyé par l'IA…"></textarea></div>
+    <div class="importMsg" id="importMsg"></div>
+    <button class="saveManualBtn" id="btnImportJson">Ajouter à la bibliothèque</button>
+    <div class="modalActions"><button class="close" data-close="addModalBg">Fermer</button></div>
+  </div>
+</div>
+
+<div class="modalBg" id="editModalBg">
+  <div class="modal">
+    <h3>Modifier la machine</h3>
+    <div class="field"><label>Nom</label><input type="text" id="fNom" placeholder="Ex. Tirage vertical"></div>
+    <div class="fieldRow">
+      <div class="field"><label>Poids / cran (kg)</label><input type="number" id="fCran" inputmode="decimal"></div>
+      <div class="field"><label>Min (kg)</label><input type="number" id="fMin" inputmode="decimal"></div>
+      <div class="field"><label>Max (kg)</label><input type="number" id="fMax" inputmode="decimal"></div>
+    </div>
+    <div class="field"><label>Substitut (optionnel)</label><input type="text" id="fSub" placeholder="Autre machine si celle-ci est occupée"></div>
+    <div class="field">
+      <label>Photo</label>
+      <input type="file" id="fPhoto" accept="image/*">
+      <div class="photoPreview" id="photoPreview" style="display:none;"><img id="photoPreviewImg" alt=""><span style="font-size:12px;color:var(--text-dim);">Aperçu</span></div>
+    </div>
+    <div class="groupPickGrid" id="groupPickGrid"></div>
+    <button class="saveManualBtn" id="btnSaveManual">Enregistrer les modifications</button>
+    <div class="modalActions">
+      <button class="close" id="btnDeleteFromEdit" style="color:var(--danger);border-color:var(--danger);">Supprimer</button>
+      <button class="close" data-close="editModalBg">Fermer</button>
+    </div>
   </div>
 </div>
 
@@ -453,86 +468,34 @@ function renderBiblio(){
   var grid = document.getElementById('libGrid');
   var items = state.exercices.filter(function(ex){ return !q || ex.nom.toLowerCase().indexOf(q)!==-1; });
   if(!items.length){
-    grid.innerHTML = '<div class="emptyMsg">Aucune machine pour l\'instant. Ajoute-en une ci-dessus.</div>';
+    grid.innerHTML = '<div class="emptyMsg">Aucune machine pour l\'instant. Ajoute-en une avec le bouton +.</div>';
     return;
   }
+  var placeholderSvg = '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="12" y="8" width="24" height="32" rx="3"/></svg>';
   grid.innerHTML = items.map(function(ex){
-    return '<div class="card" data-id="'+ex.id+'">' +
-      '<div class="cardTop">' +
-        '<div class="cardMain">' +
-          (ex.photo ? '<img class="thumb" src="'+ex.photo+'" data-photo="'+ex.id+'" alt="">' : '<div class="thumbEmpty"></div>') +
-          '<div style="flex:1;">' +
-            '<h4>'+escapeHtml(ex.nom)+'</h4>' +
-            '<div class="meta">'+fmtCharge(ex)+'</div>' +
-            '<div class="muscles">'+groupSummary(ex.groupes)+(ex.sub?'<br><b>Substitut :</b> '+escapeHtml(ex.sub):'')+'</div>' +
-          '</div>' +
-        '</div>' +
-        '<button class="delBtn" data-del="'+ex.id+'">X</button>' +
+    var grpNames = Object.keys(ex.groupes||{});
+    return '<div class="tile" data-id="'+ex.id+'">' +
+      (ex.photo ? '<img class="ph" src="'+ex.photo+'" alt="">' : '<div class="phEmpty">'+placeholderSvg+'</div>') +
+      '<div class="info">' +
+        '<h4>'+escapeHtml(ex.nom)+'</h4>' +
+        '<div class="grp">'+(grpNames.length ? escapeHtml(grpNames.join(', ')) : '\u2014')+'</div>' +
       '</div>' +
     '</div>';
   }).join('');
-  grid.querySelectorAll('[data-photo]').forEach(function(img){
-    img.addEventListener('click', function(){ openPhoto(img.src); });
+  grid.querySelectorAll('.tile').forEach(function(tile){
+    tile.addEventListener('click', function(){ openEditForm(tile.dataset.id); });
   });
 }
 document.getElementById('search').addEventListener('input', renderBiblio);
-document.getElementById('libGrid').addEventListener('click', function(e){
-  var btn = e.target.closest('[data-del]');
-  if(!btn) return;
-  var ex = state.exercices.find(function(x){ return x.id===btn.dataset.del; });
-  if(ex && confirm('Supprimer "'+ex.nom+'" ?')){
-    state.exercices = state.exercices.filter(function(x){ return x.id!==btn.dataset.del; });
-    saveState();
-    renderBiblio();
-  }
+
+var editingId = null;
+document.getElementById('toggleAdd').addEventListener('click', function(){
+  document.getElementById('importArea').value = '';
+  document.getElementById('importMsg').textContent = '';
+  document.getElementById('addModalBg').classList.add('open');
 });
 
-var toggleAdd = document.getElementById('toggleAdd');
-var addPanel = document.getElementById('addPanel');
-toggleAdd.addEventListener('click', function(){
-  addPanel.style.display = addPanel.style.display==='none' ? 'block' : 'none';
-  if(addPanel.style.display==='block') buildGroupPicker();
-});
-document.querySelectorAll('.addChoices .opt').forEach(function(opt){
-  opt.addEventListener('click', function(){
-    document.querySelectorAll('.addChoices .opt').forEach(function(o){ o.classList.remove('selected'); });
-    opt.classList.add('selected');
-    var isPhoto = opt.dataset.mode==='photo';
-    document.getElementById('modeManuel').style.display = isPhoto ? 'none' : 'block';
-    document.getElementById('modePhoto').style.display = isPhoto ? 'block' : 'none';
-  });
-});
-
-function buildGroupPicker(){
-  var grid = document.getElementById('groupPickGrid');
-  grid.innerHTML = GROUPS.map(function(g){
-    return '<label class="groupPick">'+g+'<select data-group="'+g+'"><option value="">-</option><option value="1">1</option><option value="2">2</option></select></label>';
-  }).join('');
-}
-var pendingPhoto = null;
-document.getElementById('fPhoto').addEventListener('change', function(e){
-  var f = e.target.files[0];
-  if(!f){ pendingPhoto = null; document.getElementById('photoPreview').style.display='none'; return; }
-  compressImage(f, 480, function(dataUrl){
-    pendingPhoto = dataUrl;
-    document.getElementById('photoPreviewImg').src = dataUrl;
-    document.getElementById('photoPreview').style.display = 'flex';
-  });
-});
-document.getElementById('btnSaveManual').addEventListener('click', function(){
-  var nom = document.getElementById('fNom').value.trim();
-  if(!nom){ document.getElementById('fNom').focus(); return; }
-  var groupes = {};
-  document.querySelectorAll('#groupPickGrid select').forEach(function(sel){ if(sel.value) groupes[sel.dataset.group] = Number(sel.value); });
-  state.exercices.push({
-    id: uid(), nom: nom,
-    cran: Number(document.getElementById('fCran').value||0),
-    min: Number(document.getElementById('fMin').value||0),
-    max: Number(document.getElementById('fMax').value||0),
-    sub: document.getElementById('fSub').value.trim(),
-    groupes: groupes, photo: pendingPhoto
-  });
-  saveState();
+function resetManualForm(){
   document.getElementById('fNom').value='';
   document.getElementById('fCran').value='';
   document.getElementById('fMin').value='';
@@ -541,9 +504,79 @@ document.getElementById('btnSaveManual').addEventListener('click', function(){
   document.getElementById('fPhoto').value='';
   document.getElementById('photoPreview').style.display='none';
   pendingPhoto = null;
-  buildGroupPicker();
+}
+function openEditForm(id){
+  var ex = state.exercices.find(function(x){ return x.id===id; });
+  if(!ex) return;
+  editingId = id;
+  resetManualForm();
+  document.getElementById('fNom').value = ex.nom;
+  document.getElementById('fCran').value = ex.cran;
+  document.getElementById('fMin').value = ex.min;
+  document.getElementById('fMax').value = ex.max;
+  document.getElementById('fSub').value = ex.sub||'';
+  pendingPhoto = ex.photo || null;
+  if(ex.photo){
+    document.getElementById('photoPreviewImg').src = ex.photo;
+    document.getElementById('photoPreview').style.display = 'flex';
+  }
+  buildGroupPicker(ex.groupes);
+  document.getElementById('editModalBg').classList.add('open');
+}
+document.getElementById('btnDeleteFromEdit').addEventListener('click', function(){
+  if(!editingId) return;
+  var ex = state.exercices.find(function(x){ return x.id===editingId; });
+  if(ex && confirm('Supprimer "'+ex.nom+'" ?')){
+    state.exercices = state.exercices.filter(function(x){ return x.id!==editingId; });
+    saveState();
+    editingId = null;
+    document.getElementById('editModalBg').classList.remove('open');
+    renderBiblio();
+  }
+});
+
+function buildGroupPicker(existingGroupes){
+  var grid = document.getElementById('groupPickGrid');
+  grid.innerHTML = GROUPS.map(function(g){
+    var val = (existingGroupes && existingGroupes[g]) ? String(existingGroupes[g]) : '';
+    return '<label class="groupPick">'+g+'<select data-group="'+g+'">' +
+      '<option value="" '+(val===''?'selected':'')+'>-</option>' +
+      '<option value="1" '+(val==='1'?'selected':'')+'>1</option>' +
+      '<option value="2" '+(val==='2'?'selected':'')+'>2</option>' +
+      '</select></label>';
+  }).join('');
+}
+var pendingPhoto = null;
+document.getElementById('fPhoto').addEventListener('change', function(e){
+  var f = e.target.files[0];
+  if(!f){ return; }
+  compressImage(f, 480, function(dataUrl){
+    pendingPhoto = dataUrl;
+    document.getElementById('photoPreviewImg').src = dataUrl;
+    document.getElementById('photoPreview').style.display = 'flex';
+  });
+});
+document.getElementById('btnSaveManual').addEventListener('click', function(){
+  if(!editingId) return;
+  var nom = document.getElementById('fNom').value.trim();
+  if(!nom){ document.getElementById('fNom').focus(); return; }
+  var groupes = {};
+  document.querySelectorAll('#groupPickGrid select').forEach(function(sel){ if(sel.value) groupes[sel.dataset.group] = Number(sel.value); });
+  var payload = {
+    nom: nom,
+    cran: Number(document.getElementById('fCran').value||0),
+    min: Number(document.getElementById('fMin').value||0),
+    max: Number(document.getElementById('fMax').value||0),
+    sub: document.getElementById('fSub').value.trim(),
+    groupes: groupes, photo: pendingPhoto
+  };
+  var idx = state.exercices.findIndex(function(x){ return x.id===editingId; });
+  if(idx>-1) state.exercices[idx] = Object.assign({id: editingId}, payload);
+  saveState();
+  editingId = null;
+  resetManualForm();
   renderBiblio();
-  addPanel.style.display='none';
+  document.getElementById('editModalBg').classList.remove('open');
 });
 
 document.getElementById('openPromptModal').addEventListener('click', function(){
@@ -567,12 +600,13 @@ document.getElementById('btnImportJson').addEventListener('click', function(){
       sub: parsed.sub||'', groupes: groupes, photo: null
     });
     saveState();
-    msg.textContent = '"'+parsed.nom+'" ajouté à la bibliothèque.';
+    msg.textContent = '"'+parsed.nom+'" ajout\u00e9 \u00e0 la biblioth\u00e8que.';
     msg.className = 'importMsg ok';
     document.getElementById('importArea').value = '';
     renderBiblio();
+    setTimeout(function(){ document.getElementById('addModalBg').classList.remove('open'); msg.textContent=''; }, 900);
   }catch(err){
-    msg.textContent = 'Erreur : ' + err.message;
+    msg.textContent = 'Erreur : ' + err.message;
     msg.className = 'importMsg err';
   }
 });
